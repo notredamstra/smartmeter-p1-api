@@ -1,0 +1,23 @@
+{
+  "name": "smartmeter-p1-api",
+  "version": "0.0.0",
+  "description": "",
+  "author": "Kevin Damstra",
+  "license": "",
+  "repository": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "bluebird": "^3.x",
+    "mongoose": "^4.x",
+    "mongoose-currency": "^0.x",
+    "mongoose-unique-validator": "^1.x",
+    "restify": "^6.x"
+  },
+  "devDependencies": {
+    "request": "^2.x",
+    "should": "^13.x"
+  }
+}
