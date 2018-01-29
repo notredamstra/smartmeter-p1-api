@@ -1,37 +1,37 @@
 'use strict';
 
 let mongoose = require('mongoose');
-let path = require('path');
-let config = require(path.join(__dirname, '../../config/config'));
 let Snapshot = mongoose.model('Snapshot');
 
 let PATH = '/snapshots';
-let VERSION = '1.0.0';
 
 module.exports = function (server) {
-    server.post({path: PATH, version: VERSION}, createDocument);
+    server.post({path: PATH}, createDocuments);
 
-    function createDocument(req, res, next) {
-        let snapshot = new Snapshot({
-            model_number: req.body.model_number,
-            model_id: req.body.model_id,
-            offpeak_consumption: req.body.offpeak_consumption,
-            peak_consumption: req.body.peak_consumption,
-            offpeak_redelivery: req.body.offpeak_redelivery,
-            peak_redelivery: req.body.peak_redelivery,
-            live_usage: req.body.live_usage,
-            live_redelivery: req.body.live_redelivery,
-            gas_consumption: req.body.gas_consumption,
-            tst_reading: req.body.tst_reading
+    function createDocuments(req, res, next) {
+        let snapshots = req.body.items.map(function (item) {
+            return new Snapshot({
+                model_number: item.model_number,
+                model_id: item.model_id,
+                offpeak_consumption: item.offpeak_consumption,
+                peak_consumption: item.peak_consumption,
+                offpeak_redelivery: item.offpeak_redelivery,
+                peak_redelivery: item.peak_redelivery,
+                live_usage: item.live_usage,
+                live_redelivery: item.live_redelivery,
+                gas_consumption: item.gas_consumption,
+                tst_reading: item.tst_reading
+            });
         });
 
-        snapshot.save(function (error, snapshot, numAffected) {
-            if (error) {
-                return next(error);
-            } else {
-                res.send(201);
-                return next();
-            }
-        });
+        snapshots.insertMany(snapshots)
+            .then(function (entry) {
+                res.status(201).json(entry);
+            })
+            .catch(function (error) {
+                if (error) {
+                    res.status(500).json(error);
+                }
+            });
     }
 };
