@@ -24,13 +24,14 @@ module.exports = function (server) {
             });
         });
 
-        snapshots.insertMany(snapshots)
+        Snapshot.insertMany(snapshots)
             .then(function (entry) {
-                res.status(201).json(entry);
+                res.send(entry);
+                // res.send(201).json(entry);
             })
             .catch(function (error) {
                 if (error) {
-                    res.status(500).json(error);
+                    // res.status(500).json(error);
                 }
             });
     }
