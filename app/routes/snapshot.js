@@ -27,11 +27,10 @@ module.exports = function (server) {
         Snapshot.insertMany(snapshots)
             .then(function (entry) {
                 res.send(entry);
-                // res.send(201).json(entry);
             })
             .catch(function (error) {
                 if (error) {
-                    // res.status(500).json(error);
+                    res.send(error);
                 }
             });
     }
