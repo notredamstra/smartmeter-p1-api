@@ -11,7 +11,7 @@ let MONGO_HOST = process.env.MONGO_HOST || '127.0.0.1';
 let MONGO_PORT = process.env.MONGO_PORT || 27017;
 let LOG_LEVEL = process.env.LOG_LEVEL || 'info';
 
-let APP_NAME = 'node-restify-mongodb-';
+let APP_NAME = 'smartmeter-p1-api-';
 
 let config = {
     development: {
