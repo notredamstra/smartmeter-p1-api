@@ -42,14 +42,12 @@ module.exports = function (server) {
     function getDocuments(req, res, next) {
         res.set("Content-Type", "application/json");
 
-        let response = [];
-
         // get data every 60 seconds instead of 1
         let stream = Snapshot.aggregate([
             {
                 $match: {
                     "tst_reading_electricity": {
-                        $mod: [100, 0]
+                        $mod: [60000, 0]
                     }
                 }
             },
@@ -88,13 +86,12 @@ module.exports = function (server) {
             }
         ]).cursor({batchSize: 100}).exec().stream();
 
-
         stream.on('data', function (item) {
-            response.push(item);
+            res.write(JSON.stringify(item));
         });
 
         stream.on('end', function () {
-            res.json(200, response);
+            res.end();
         })
 
 

@@ -14,7 +14,7 @@ let snapshotSchema = new Schema({
     live_usage: {type: Number, required: true},
     live_redelivery: {type: Number, required: true},
     gas_consumption: {type: Number, required: true},
-    tst_reading_electricity: {type: Number, required: true},
+    tst_reading_electricity: {type: Number, required: true, index: true},
     tst_reading_gas: {type: Number, required: true}
 });
 
