@@ -7,10 +7,14 @@ let moment = require('moment');
 let PATH = '/v1/snapshots';
 
 module.exports = function (server) {
-    server.post({path: PATH}, createDocuments);
-    server.get({path: PATH}, getDocuments);
+    server.post({path: PATH}, createSnapshots);
+    server.get({path: PATH + '/daily'}, getLast24h);
 
-    function createDocuments(req, res, next) {
+    // server.get({path: PATH + '/weekly'}, getLast7d);
+
+    function createSnapshots(req, res, next) {
+        console.log('request');
+        console.log(req.body);
         let snapshots = req.body.items.map(function (item) {
             return new Snapshot({
                 meter_model: item.meter_model,
@@ -28,8 +32,8 @@ module.exports = function (server) {
         });
 
         Snapshot.insertMany(snapshots)
-            .then(function (entry) {
-                res.send(201, {items: entry});
+            .then(function (entries) {
+                res.send(201, {items: entries});
             })
             .catch(function (error) {
                 if (error) {
@@ -39,16 +43,28 @@ module.exports = function (server) {
             });
     }
 
-    function getDocuments(req, res, next) {
+    function getLast24h(req, res, next) {
         res.set("Content-Type", "application/json");
 
-        // get data every 60 seconds instead of 1
+        let previous24h = new Date();
+        previous24h = previous24h.setHours(previous24h.getHours() - 24);
+
+        // get data every 5 minutes instead of every second
         let stream = Snapshot.aggregate([
             {
                 $match: {
-                    "tst_reading_electricity": {
-                        $mod: [60000, 0]
-                    }
+                    $and: [
+                        {
+                            "tst_reading_electricity": {
+                                $mod: [300000, 0]
+                            }
+                        },
+                        {
+                            "tst_reading_electricity": {
+                                $gte: previous24h
+                            }
+                        }
+                    ]
                 }
             },
             {
@@ -62,7 +78,7 @@ module.exports = function (server) {
                     live_redelivery: {$first: "$live_redelivery"},
                     gas_consumption: {$first: "$gas_consumption"},
                     tst_reading_electricity: {$first: "$tst_reading_electricity"},
-                    tst_reading_gas: {$first: "$tst_reading_gas"},
+                    tst_reading_gas: {$first: "$tst_reading_gas"}
                 }
             },
             {
