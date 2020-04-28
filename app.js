@@ -20,7 +20,7 @@ server.use(restify.plugins.gzipResponse());
 server.pre(restify.pre.sanitizePath());
 server.use(
     function crossOrigin(req, res, next) {
-        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Origin', '*'); //todo: replace with API Key or tokens
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
         return next();
     }
